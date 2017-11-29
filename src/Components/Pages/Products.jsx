@@ -1,8 +1,8 @@
 import React from 'react'
 import Plain from '@/Components/Templates/Plain'
 
-const Home = () => (
-  <Plain title='Home' />
+const Products = () => (
+  <Plain title='Products' />
 )
 
-export default Home
+export default Products

@@ -3,9 +3,9 @@ import NavLink from '@/Components/Atoms/NavLink'
 
 const SiteNav = () => (
   <ul className='nav navbar-nav'>
-    <NavLink target='/' text='Products' />
-    <NavLink target='/' text='Customers' />
-    <NavLink target='/' text='Invoices' />
+    <NavLink target='/products' text='Products' />
+    <NavLink target='/customers' text='Customers' />
+    <NavLink target='/invoices' text='Invoices' />
   </ul>
 )
 
