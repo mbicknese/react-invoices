@@ -13,7 +13,7 @@ class InvoiceModal extends Component {
 
   render () {
     return (
-      <Modal title='Add new invoice' actions={this.renderActions()} ref={c => this.element = c.element}>
+      <Modal title='Add new invoice' actions={this.renderActions()} ref={c => c ? this.element = c.element : null}>
         <form className='invoice-form'>
           <div className='row'>
             <div className='col-xs-6'>
