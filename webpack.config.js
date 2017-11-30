@@ -1,6 +1,8 @@
 const webpack = require('webpack')
 const path = require('path')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
+// 'css/app.css': path.join(__dirname, 'src', 'App.scss')
 const config = {
   entry: path.join(__dirname, 'src', 'index.js'),
   module: {
@@ -9,6 +11,16 @@ const config = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: 'babel-loader'
+      },
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({use: [{
+          loader: 'css-loader'
+        }, {
+          loader: 'sass-loader'
+        }],
+          fallback: 'style-loader'
+        })
       }
     ]
   },
@@ -23,6 +35,10 @@ const config = {
       'process.env': {
         'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
       }
+    }),
+    new ExtractTextPlugin({
+      filename: 'css/app.css',
+      disable: process.env.NODE_ENV === 'development'
     })
   ],
   devServer: {

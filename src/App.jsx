@@ -5,6 +5,8 @@ import Customers from '@/Components/Pages/Customers'
 import Invoices from '@/Components/Pages/Invoices'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
+import 'App.scss'
+
 const App = () => (
   <Router>
     <div>
