@@ -25,5 +25,6 @@ const InvoiceTable = ({ invoices = [] }) => (
     </div>
   </article>
 )
+InvoiceTable.propTypes = propTypes
 
 export default InvoiceTable

@@ -13,4 +13,16 @@
         // Lacking design for hover state
       }
   }
+  &-info {
+    background-color: $blue-light;
+  }
+  &-danger {
+    background-color: $red-light;
+    color: $red-dark;
+  }
+
+  &-xs {
+    padding: $spacing-1 $spacing-2;
+    font-size: $font-size-3;
+  }
 }

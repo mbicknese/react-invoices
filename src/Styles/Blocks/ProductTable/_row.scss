@@ -1,0 +1,7 @@
+.product-table__row {
+  padding: $spacing-2 $spacing-3;
+
+  & > div {
+    line-height: 3.2rem;
+  }
+}
