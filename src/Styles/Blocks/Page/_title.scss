@@ -1,0 +1,10 @@
+.page__title {
+  text-transform: uppercase;
+  color: $grey;
+  $font-weight: 700;
+  // font-family: unknown (hard to read from PNG)
+  text-shadow: 0 1px 0 $grey-light;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}

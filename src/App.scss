@@ -1,4 +1,10 @@
-$body-color: lightblue;
-body {
-  background: $body-color;
-}
+@import "Styles/variables";
+
+@import "Styles/Bootstrap/button";
+
+@import "Styles/Blocks/Page/title";
+@import "Styles/Blocks/InvoiceTable/article";
+@import "Styles/Blocks/InvoiceTable/header";
+@import "Styles/Blocks/InvoiceTable/body";
+@import "Styles/Blocks/InvoiceTable/column-name";
+@import "Styles/Blocks/InvoiceTable/new";
