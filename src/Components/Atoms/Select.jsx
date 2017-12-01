@@ -7,12 +7,13 @@ const propTypes = {
   value: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number
-  ])
+  ]),
+  onChange: PropTypes.func
 }
 
-const Select = ({ options, placeholder = false, value = false }) => (
-  <select className='form-control' value={value}>
-    {placeholder && <option>{placeholder}</option>}
+const Select = ({ options, placeholder = false, value = false, onChange = () => {} }) => (
+  <select className='form-control' value={value} onChange={onChange}>
+    {placeholder && <option value=''>{placeholder}</option>}
     {options.map(({ value, text }) => (<option value={value} key={value}>{text}</option>))}
   </select>
 )

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import Modal from '@/Components/Atoms/Modal'
 import ContactInfo from '@/Components/Atoms/ContactInfo'
 import Select from '@/Components/Atoms/Select'
-// import SelectCustomer from '@/Containers/SelectCustomer'
+import InvoiceProductRow from '@/Components/Molecules/InvoiceProductRow'
+import Money from '@/Components/Atoms/Money'
 
 const propTypes = {
   customers: PropTypes.object.isRequired,
@@ -13,6 +14,79 @@ const propTypes = {
 }
 
 class InvoiceModal extends Component {
+  constructor () {
+    super()
+    this.addProduct = this.addProduct.bind(this)
+    this.onCustomerChange = this.onCustomerChange.bind(this)
+    this.onDiscountChange = this.onDiscountChange.bind(this)
+    this.onProductRemove = this.onProductRemove.bind(this)
+    this.onProductChange = this.onProductChange.bind(this)
+    this.onQuantityChange = this.onQuantityChange.bind(this)
+    this.onTotalChange = this.onTotalChange.bind(this)
+    this.state = {
+      total: 0,
+      discount: 0,
+      customerId: undefined,
+      newProduct: { id: undefined, quantity: 1 },
+      invoiceProducts: []
+    }
+  }
+
+  componentWillReceiveProps ({ total, discount, customerId }) {
+    this.setState({
+      total,
+      discount,
+      customerId
+    })
+  }
+
+  addProduct () {
+    this.setState(({ invoiceProducts, newProduct }) => {
+      const existingProduct = invoiceProducts.filter(({ id }) => id === newProduct.id)
+      if (existingProduct.length) {
+        newProduct.quantity = parseInt(newProduct.quantity) + parseInt(existingProduct[0].quantity)
+        invoiceProducts.splice(invoiceProducts.indexOf(existingProduct), 1)
+      }
+      return {
+        invoiceProducts: [...invoiceProducts, newProduct],
+        newProduct: { id: undefined, quantity: 1 }
+      }
+    })
+    this.onTotalChange()
+  }
+  onCustomerChange (event) {
+    this.setState({ customerId: event.target.value })
+  }
+  onDiscountChange (event) {
+    // Does not filter discount > 100 because one might make a refund invoice (200%)
+    this.setState({ discount: Math.max(0, event.target.value) })
+    this.onTotalChange()
+  }
+  onProductRemove (idToRemove) {
+    this.setState(prevState => ({
+      invoiceProducts: prevState.invoiceProducts.filter(({ id }) => id !== idToRemove)
+    }))
+    this.onTotalChange()
+  }
+  onProductChange (event) {
+    this.setState({ newProduct: {
+      id: event.target.value !== '' ? event.target.value : undefined,
+      quantity: 1
+    }})
+  }
+  onQuantityChange (event) {
+    const quantity = event.target.value
+    this.setState(prevState => ({ newProduct: {
+      id: prevState.newProduct.id,
+      quantity
+    }}))
+  }
+  onTotalChange () {
+    this.setState(({ discount, invoiceProducts }) => ({
+      total: ((100 - discount) / 100) * invoiceProducts.reduce((total, { id, quantity }) => total + quantity * this.props.products[id].price, 0)
+    }))
+  }
+
   renderActions () {
     return [
       <button className='btn btn-info' key='save'>Save invoice</button>,
@@ -21,7 +95,8 @@ class InvoiceModal extends Component {
   }
 
   render () {
-    const { customers, total, discount, customerId } = this.props
+    const { total, discount, customerId, newProduct, invoiceProducts } = this.state
+    const { customers, products } = this.props
     return (
       <Modal title='Add new invoice' actions={this.renderActions()} id='invoice-modal'>
         <form className='invoice-form'>
@@ -32,6 +107,7 @@ class InvoiceModal extends Component {
                 placeholder='Select a customer'
                 value={customerId}
                 options={Object.entries(customers).map(([_, {id, name}]) => ({ value: id, text: name }))}
+                onChange={this.onCustomerChange}
               />
             </div>
             <div className='col-xs-4 text-right pull-right'>
@@ -48,11 +124,23 @@ class InvoiceModal extends Component {
                 <div className='col-sm-3 product-table__column-name text-center'>Action</div>
               </div>
             </header>
+            {invoiceProducts.map(({id, quantity}) => <InvoiceProductRow id={id} price={products[id].price} name={products[id].name} quantity={quantity} key={id} onRemove={this.onProductRemove} />)}
             <div className='row product-table__row'>
-              <div className='col-sm-5'><select className='form-control'><option>Select A Product</option></select></div>
-              <div className='col-sm-2 text-right'>0.00</div>
-              <div className='col-sm-2'><input type='text' className='form-control  text-center' /></div>
-              <div className='col-sm-3 text-center'><button type='button' className='btn btn-xs btn-success btn-block'>Add product</button></div>
+              <div className='col-sm-5'>
+                <Select
+                  placeholder='Select a product'
+                  value={newProduct.id}
+                  options={Object.entries(products).map(([_, {id, name}]) => ({ value: id, text: name }))}
+                  onChange={this.onProductChange}
+                />
+              </div>
+              <div className='col-sm-2 text-right'>{newProduct.id ? products[newProduct.id].price : '-'}</div>
+              <div className='col-sm-2'>
+                <input type='text' className='form-control text-center' value={newProduct.quantity} onChange={this.onQuantityChange} />
+              </div>
+              <div className='col-sm-3 text-center'>
+                <button type='button' disabled={!newProduct.id} className='btn btn-xs btn-success btn-block' onClick={this.addProduct}>Add product</button>
+              </div>
             </div>
           </div>
           <div className='row'>
@@ -67,11 +155,11 @@ class InvoiceModal extends Component {
                 <div className='row summary-table__row'>
                   <div className='col-sm-6'>
                     <div className='input-group'>
-                      <input className='form-control text-center' value={discount} /><span className='input-group-addon'>%</span>
+                      <input type='text' className='form-control text-center' value={discount} onChange={this.onDiscountChange} /><span className='input-group-addon'>%</span>
                     </div>
                   </div>
                   <div className='col-sm-6 text-right'>
-                    <span className='summary-table__amount'>${total}</span>
+                    <span className='summary-table__amount'><Money amount={total} /></span>
                   </div>
                 </div>
               </div>

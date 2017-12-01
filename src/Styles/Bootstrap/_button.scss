@@ -9,9 +9,14 @@
   &-success {
     background-color: $green-lighter;
     color: $green-light;
-      &:hover {
-        // Lacking design for hover state
-      }
+
+    &[disabled] {
+      background-color: $grey-light;
+      color: $grey-lightest;
+    }
+    &:hover {
+      // Lacking design for hover state
+    }
   }
   &-info {
     background-color: $blue-light;

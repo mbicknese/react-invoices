@@ -4,11 +4,13 @@ import { routerReducer, routerMiddleware as createRouterMiddleware } from 'react
 import { createEpicMiddleware } from 'redux-observable'
 import * as reducers from './Ducks'
 import { loadEpic as loadInvoices } from './Ducks/Invoices'
-import { loadEpic as customersEpic } from './Ducks/Customers'
+import { loadEpic as loadCustomers } from './Ducks/Customers'
+import { loadEpic as loadProducts } from './Ducks/Products'
 
 const epicMiddleware = [
   createEpicMiddleware(loadInvoices),
-  createEpicMiddleware(customersEpic)
+  createEpicMiddleware(loadCustomers),
+  createEpicMiddleware(loadProducts)
 ]
 const history = createHistory()
 const routerMiddleware = createRouterMiddleware(history)
