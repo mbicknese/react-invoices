@@ -1,4 +1,7 @@
 .invoice-table__body {
   min-height: 50rem;
-  display: flex;
+
+  &--empty {
+    display: flex;
+  }
 }

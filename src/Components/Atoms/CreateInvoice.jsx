@@ -1,3 +1,4 @@
+/* eslint-env jquery */
 import React, { Component } from 'react'
 import InvoiceModal from '@/Components/Organisms/InvoiceModal'
 

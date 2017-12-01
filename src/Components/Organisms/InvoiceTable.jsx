@@ -1,12 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import CreateInvoice from '@/Components/Atoms/CreateInvoice'
+import InvoiceRow from '@/Components/Molecules/InvoiceRow'
 
 const propTypes = {
-  invoices: PropTypes.array
+  invoices: PropTypes.array,
+  customers: PropTypes.object
 }
 
-const InvoiceTable = ({ invoices = [] }) => (
+const InvoiceTable = ({ invoices = [], customers = {} }) => (
   <article className='invoice-table__article'>
     <header className='invoice-table__header'>
       <div className='row'>
@@ -16,10 +18,10 @@ const InvoiceTable = ({ invoices = [] }) => (
         <div className='col-sm-2 invoice-table__column-name text-right'>Total</div>
       </div>
     </header>
-    <div className='invoice-table__body'>
+    <div className={'invoice-table__body' + (invoices.length ? '' : ' invoices-table__body--empty')}>
       {
         invoices.length
-        ? <div>Invoices</div>
+        ? invoices.map(invoice => <InvoiceRow customer={customers[invoice.customer_id]} {...invoice} key={invoice.id} />)
         : <div className='invoice-table__new'><p>There are no invoices</p><CreateInvoice /></div>
       }
     </div>
