@@ -1,3 +1,4 @@
+/* global API_URL */
 import 'rxjs' // This should be optimized
 import { ajax } from 'rxjs/observable/dom/ajax'
 import { LOCATION_CHANGE } from 'react-router-redux'
@@ -27,6 +28,6 @@ export const loadInvoices = payload => ({ type: LOAD, payload })
 export const loadEpic = action$ =>
   action$.ofType(LOCATION_CHANGE)
     .mergeMap(action =>
-      ajax.getJSON('http://localhost:8000/api/invoices')
+      ajax.getJSON(`${API_URL}/invoices`)
       .map(response => loadInvoices(response))
     )
