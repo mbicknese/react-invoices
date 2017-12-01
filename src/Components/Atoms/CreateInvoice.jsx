@@ -1,25 +1,9 @@
-/* eslint-env jquery */
-import React, { Component } from 'react'
-import InvoiceModal from '@/Components/Organisms/InvoiceModal'
+import React from 'react'
 
-class CreateInvoice extends Component {
-  constructor () {
-    super()
-    this.openModal = this.openModal.bind(this)
-  }
-
-  openModal () {
-    $(this.modalDiv.element).modal({show: true})
-  }
-
-  render () {
-    return (
-      <div>
-        <button className='btn btn-success' onClick={this.openModal}>Create new invoice</button>
-        <InvoiceModal ref={c => this.modalDiv = c} />
-      </div>
-    )
-  }
-}
+const CreateInvoice = () => (
+  <button className='btn btn-success' data-toggle='modal' data-target='#invoice-modal'>
+    Create new invoice
+  </button>
+)
 
 export default CreateInvoice

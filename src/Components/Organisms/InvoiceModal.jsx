@@ -1,7 +1,16 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import Modal from '@/Components/Atoms/Modal'
 import ContactInfo from '@/Components/Atoms/ContactInfo'
-import SelectCustomer from '@/Containers/SelectCustomer'
+import Select from '@/Components/Atoms/Select'
+// import SelectCustomer from '@/Containers/SelectCustomer'
+
+const propTypes = {
+  customers: PropTypes.object.isRequired,
+  discount: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+  customerId: PropTypes.number.isRequired
+}
 
 class InvoiceModal extends Component {
   renderActions () {
@@ -12,16 +21,21 @@ class InvoiceModal extends Component {
   }
 
   render () {
+    const { customers, total, discount, customerId } = this.props
     return (
-      <Modal title='Add new invoice' actions={this.renderActions()} ref={c => c ? this.element = c.element : null}>
+      <Modal title='Add new invoice' actions={this.renderActions()} id='invoice-modal'>
         <form className='invoice-form'>
           <div className='row'>
             <div className='col-xs-6'>
               <h5>Customer</h5>
-              <SelectCustomer />
+              <Select
+                placeholder='Select a customer'
+                value={customerId}
+                options={Object.entries(customers).map(([_, {id, name}]) => ({ value: id, text: name }))}
+              />
             </div>
             <div className='col-xs-4 text-right pull-right'>
-              <ContactInfo address='215 Market Street, Dansville CA 94325' phone='555-534-2342' />
+              {customers[customerId] && <ContactInfo address={customers[customerId].address} phone={customers[customerId].phone} />}
             </div>
           </div>
           <h5>Products</h5>
@@ -53,11 +67,11 @@ class InvoiceModal extends Component {
                 <div className='row summary-table__row'>
                   <div className='col-sm-6'>
                     <div className='input-group'>
-                      <input className='form-control text-center' /><span className='input-group-addon'>%</span>
+                      <input className='form-control text-center' value={discount} /><span className='input-group-addon'>%</span>
                     </div>
                   </div>
                   <div className='col-sm-6 text-right'>
-                    <span className='summary-table__amount'>$9.99</span>
+                    <span className='summary-table__amount'>${total}</span>
                   </div>
                 </div>
               </div>
@@ -69,4 +83,5 @@ class InvoiceModal extends Component {
   }
 }
 
+InvoiceModal.propTypes = propTypes
 export default InvoiceModal

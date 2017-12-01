@@ -5,10 +5,11 @@ import InvoiceRow from '@/Components/Molecules/InvoiceRow'
 
 const propTypes = {
   invoices: PropTypes.array,
-  customers: PropTypes.object
+  customers: PropTypes.object,
+  onRowClick: PropTypes.func
 }
 
-const InvoiceTable = ({ invoices = [], customers = {} }) => (
+const InvoiceTable = ({ onRowClick, invoices = [], customers = {} }) => (
   <article className='invoice-table__article'>
     <header className='invoice-table__header'>
       <div className='row'>
@@ -21,7 +22,9 @@ const InvoiceTable = ({ invoices = [], customers = {} }) => (
     <div className={'invoice-table__body' + (invoices.length ? '' : ' invoices-table__body--empty')}>
       {
         invoices.length
-        ? invoices.map(invoice => <InvoiceRow customer={customers[invoice.customer_id]} {...invoice} key={invoice.id} />)
+        ? invoices.map(invoice =>
+          <InvoiceRow customer={customers[invoice.customer_id]} {...invoice} key={invoice.id} onClick={onRowClick} />
+          )
         : <div className='invoice-table__new'><p>There are no invoices</p><CreateInvoice /></div>
       }
     </div>

@@ -3,13 +3,17 @@ import PropTypes from 'prop-types'
 
 const propTypes = {
   options: PropTypes.array.isRequired,
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ])
 }
 
-const Select = ({ options, placeholder = false }) => (
-  <select className='form-control'>
+const Select = ({ options, placeholder = false, value = false }) => (
+  <select className='form-control' value={value}>
     {placeholder && <option>{placeholder}</option>}
-    {options.map((option) => (<option value={option.value} key={option.value}>{option.text}</option>))}
+    {options.map(({ value, text }) => (<option value={value} key={value}>{text}</option>))}
   </select>
 )
 Select.propTypes = propTypes

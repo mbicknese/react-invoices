@@ -3,19 +3,23 @@ import PropTypes from 'prop-types'
 
 const propTypes = {
   headerLevel: PropTypes.number,
-  address: PropTypes.string.isRequired,
-  phone: PropTypes.string.isRequired
+  address: PropTypes.string,
+  phone: PropTypes.string
 }
 
-const ContactInfo = ({ headerLevel = 5, address, phone }) => {
+const ContactInfo = ({ headerLevel = 5, address = false, phone = false }) => {
   const CustomHeading = `h${headerLevel}`
 
   return (
     <div>
-      <CustomHeading>Address</CustomHeading>
-      <p>{address}</p>
-      <CustomHeading>Phone</CustomHeading>
-      <p>{phone}</p>
+      {address && <div>
+        <CustomHeading>Address</CustomHeading>
+        <p>{address}</p>
+      </div>}
+      {phone && <div>
+        <CustomHeading>Phone</CustomHeading>
+        <p>{phone}</p>
+      </div>}
     </div>
   )
 }
