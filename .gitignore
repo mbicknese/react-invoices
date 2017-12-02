@@ -1,3 +1,4 @@
 node_modules
 invoices.sqlite
 public/
+public/css/app.css

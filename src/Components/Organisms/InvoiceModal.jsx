@@ -12,6 +12,7 @@ const propTypes = {
   total: PropTypes.number.isRequired,
   customerId: PropTypes.number.isRequired,
   onSave: PropTypes.func,
+  onDelete: PropTypes.func,
   id: PropTypes.number,
   error: PropTypes.string
 }
@@ -107,7 +108,7 @@ class InvoiceModal extends Component {
     if (!this.state.busy) {
       return [
         <button className='btn btn-info' key='save' onClick={this.onSave}>Save invoice</button>,
-        <button className='btn btn-danger' key='delete'>Delete invoice</button>
+        this.props.id !== null ? <button className='btn btn-danger' key='delete' onClick={() => this.props.onDelete(this.props.id)}>Delete invoice</button> : false
       ]
     }
     return [<p key='saving'>Saving ...</p>]

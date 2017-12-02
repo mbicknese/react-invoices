@@ -20,7 +20,6 @@
  *       2. display alert
  */
 
-// import 'rxjs' // This should be optimized (by loading it globally)
 import { Observable } from 'rxjs'
 import { ajax } from 'rxjs/observable/dom/ajax'
 import { LOCATION_CHANGE } from 'react-router-redux'
@@ -29,6 +28,7 @@ const LOAD = 'react-invoice/invoices/LOAD'
 const OPEN = 'react-invoice/invoices/OPEN'
 const UPDATE = 'react-invoice/invoices/UPDATE'
 const CREATE = 'react-invoice/invoices/CREATE'
+const DELETE = 'react-invoice/invoices/DELETE'
 const WRITE_SUCCESS = 'react-invoice/invoices/WRITE_SUCCESS'
 const WRITE_ERROR = 'react-invoice/invoices/WRITE_ERROR'
 
@@ -62,10 +62,14 @@ export default (state = initialState, action) => {
         openId: action.payload,
         error: undefined
       }
+    case DELETE:
+      delete state.byId[action.payload]
+      state.allIds.splice(state.allIds.indexOf(action.payload), 1)
+      return { ...state, openId: null }
     case WRITE_SUCCESS:
       state.byId[action.payload.id] = payloadToInvoice(action.payload)
       if (state.allIds.indexOf(action.payload.id) === -1) { state.allIds.push(action.payload.id) }
-      return { ...state }
+      return { ...state, openId: action.payload.id }
     case WRITE_ERROR:
       return {
         ...state,
@@ -80,6 +84,7 @@ export const loadInvoices = payload => ({ type: LOAD, payload })
 export const openInvoice = payload => ({ type: OPEN, payload })
 export const updateInvoice = payload => ({ type: UPDATE, payload })
 export const createInvoice = payload => ({ type: CREATE, payload })
+export const deleteInvoice = payload => ({ type: DELETE, payload })
 const writeInvoiceSuccess = payload => ({ type: WRITE_SUCCESS, payload })
 
 export const loadEpic = action$ =>
@@ -102,6 +107,13 @@ export const createEpic = action$ =>
       .map(response => writeInvoiceSuccess(response.response))
       .catch(() => Observable.of({ type: WRITE_ERROR }))
     )
+export const deleteEpic = action$ =>
+  action$.ofType(DELETE)
+    .mergeMap(action => {
+      $('.modal').modal('hide')
+      return ajax.delete(`${API_URL}/invoices/${action.payload}`).mergeMap(() => [])
+    }
+  )
 export const writeEpic = action$ =>
   action$.ofType(WRITE_SUCCESS)
     .mergeMap(response => {

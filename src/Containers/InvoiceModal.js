@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import InvoiceModal from '@/Components/Organisms/InvoiceModal'
-import { updateInvoice, createInvoice } from '@/State/Ducks/Invoices'
+import { updateInvoice, createInvoice, deleteInvoice } from '@/State/Ducks/Invoices'
 
 const mapStateToProps = state => ({
   customers: state.customers.byId,
@@ -12,12 +12,13 @@ const mapStateToProps = state => ({
   error: state.invoices.error
 })
 const mapDispatchToProps = dispatch => ({
-  onSave: (payload) => {
+  onSave: payload => {
     if (payload.id) {
       return dispatch(updateInvoice(payload))
     }
     return dispatch(createInvoice(payload))
-  }
+  },
+  onDelete: payload => dispatch(deleteInvoice(payload))
 })
 
 export default connect(
