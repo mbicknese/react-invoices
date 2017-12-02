@@ -12,7 +12,8 @@ const propTypes = {
   total: PropTypes.number.isRequired,
   customerId: PropTypes.number.isRequired,
   onSave: PropTypes.func,
-  id: PropTypes.number
+  id: PropTypes.number,
+  error: PropTypes.string
 }
 
 class InvoiceModal extends Component {
@@ -31,7 +32,8 @@ class InvoiceModal extends Component {
       discount: 0,
       customerId: undefined,
       newProduct: { id: undefined, quantity: 1 },
-      invoiceProducts: []
+      invoiceProducts: [],
+      busy: false
     }
   }
 
@@ -39,7 +41,8 @@ class InvoiceModal extends Component {
     this.setState({
       total,
       discount,
-      customerId
+      customerId,
+      busy: false
     })
   }
 
@@ -85,6 +88,7 @@ class InvoiceModal extends Component {
     }}))
   }
   onSave () {
+    this.setState({ busy: true })
     const { total, discount, customerId } = this.state
     this.props.onSave({
       total,
@@ -100,18 +104,31 @@ class InvoiceModal extends Component {
   }
 
   renderActions () {
-    return [
-      <button className='btn btn-info' key='save' onClick={this.onSave}>Save invoice</button>,
-      <button className='btn btn-danger' key='delete'>Delete invoice</button>
-    ]
+    if (!this.state.busy) {
+      return [
+        <button className='btn btn-info' key='save' onClick={this.onSave}>Save invoice</button>,
+        <button className='btn btn-danger' key='delete'>Delete invoice</button>
+      ]
+    }
+    return [<p key='saving'>Saving ...</p>]
+  }
+
+  renderError () {
+    return (
+      <div className='alert alert-danger' role='alert'>
+        <span className='sr-only'>Error:</span>
+        {this.props.error}
+      </div>
+    )
   }
 
   render () {
     const { total, discount, customerId, newProduct, invoiceProducts } = this.state
-    const { customers, products } = this.props
+    const { customers, products, error } = this.props
     return (
       <Modal title='Add new invoice' actions={this.renderActions()} id='invoice-modal'>
         <form className='invoice-form'>
+          {error && this.renderError()}
           <div className='row'>
             <div className='col-xs-6'>
               <h5>Customer</h5>

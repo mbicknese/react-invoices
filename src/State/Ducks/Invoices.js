@@ -1,19 +1,52 @@
 /* global API_URL */
 /* eslint-env jquery */
-import 'rxjs' // This should be optimized
+
+/**
+ *  Updating an invoice:
+ *   1. Click invoice
+ *   2. Dispatch OPEN with correct id
+ *   3. Show modal with data retrieved through id
+ *   4. User input / store invoice in local state
+ *   5. Click save
+ *   6. Dispatch UPDATE
+ *   7. Send PUT request
+ *   8. On response
+ *     success
+ *       1. dispatch WRITE_SUCCESS
+ *       2. write response to state
+ *       3. close modal
+ *     error
+ *       1. dispatch WRITE_ERROR
+ *       2. display alert
+ */
+
+// import 'rxjs' // This should be optimized (by loading it globally)
+import { Observable } from 'rxjs'
 import { ajax } from 'rxjs/observable/dom/ajax'
 import { LOCATION_CHANGE } from 'react-router-redux'
 
 const LOAD = 'react-invoice/invoices/LOAD'
 const OPEN = 'react-invoice/invoices/OPEN'
 const UPDATE = 'react-invoice/invoices/UPDATE'
-const UPDATE_SUCCESS = 'react-invoice/invoices/UPDATE_SUCCESS'
+const CREATE = 'react-invoice/invoices/CREATE'
+const WRITE_SUCCESS = 'react-invoice/invoices/WRITE_SUCCESS'
+const WRITE_ERROR = 'react-invoice/invoices/WRITE_ERROR'
 
 const initialState = {
   byId: {},
   allIds: [],
-  openId: undefined
+  openId: undefined,
+  error: undefined
 }
+
+const payloadToInvoice = ({ id, total, discount, customer_id, createdAt, updatedAt }) => ({
+  id: id * 1,
+  total: total * 1,
+  discount: discount * 1,
+  customer_id: customer_id * 1,
+  createdAt,
+  updatedAt
+})
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -26,11 +59,18 @@ export default (state = initialState, action) => {
     case OPEN:
       return {
         ...state,
-        openId: action.payload
+        openId: action.payload,
+        error: undefined
       }
-    case UPDATE:
-      Object.assign(state.byId[action.payload.id], action.payload)
+    case WRITE_SUCCESS:
+      state.byId[action.payload.id] = payloadToInvoice(action.payload)
+      if (state.allIds.indexOf(action.payload.id) === -1) { state.allIds.push(action.payload.id) }
       return { ...state }
+    case WRITE_ERROR:
+      return {
+        ...state,
+        error: 'Could not save invoice, please try again later.'
+      }
     default:
       return state
   }
@@ -39,7 +79,8 @@ export default (state = initialState, action) => {
 export const loadInvoices = payload => ({ type: LOAD, payload })
 export const openInvoice = payload => ({ type: OPEN, payload })
 export const updateInvoice = payload => ({ type: UPDATE, payload })
-const updateInvoiceSuccess = payload => ({ type: UPDATE_SUCCESS, payload })
+export const createInvoice = payload => ({ type: CREATE, payload })
+const writeInvoiceSuccess = payload => ({ type: WRITE_SUCCESS, payload })
 
 export const loadEpic = action$ =>
   action$.ofType(LOCATION_CHANGE)
@@ -51,8 +92,19 @@ export const updateEpic = action$ =>
   action$.ofType(UPDATE)
     .mergeMap(action =>
       ajax.put(`${API_URL}/invoices/${action.payload.id}`, action.payload)
-      .map(response => updateInvoiceSuccess())
+      .map(response => writeInvoiceSuccess(response.response))
+      .catch(() => Observable.of({ type: WRITE_ERROR }))
     )
-export const updateSuccessEpic = action$ =>
-  action$.ofType(UPDATE_SUCCESS)
-    .mergeMap(() => { $('.modal').modal('hide'); return [] }) // Got to read into rxjs/redux-observable on not returning a stream
+export const createEpic = action$ =>
+  action$.ofType(CREATE)
+    .mergeMap(action =>
+      ajax.post(`${API_URL}/invoices`, action.payload)
+      .map(response => writeInvoiceSuccess(response.response))
+      .catch(() => Observable.of({ type: WRITE_ERROR }))
+    )
+export const writeEpic = action$ =>
+  action$.ofType(WRITE_SUCCESS)
+    .mergeMap(response => {
+      $('.modal').modal('hide')
+      return []
+    }) // Got to read into rxjs/redux-observable on not returning a stream

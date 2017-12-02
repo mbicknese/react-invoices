@@ -1,15 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CreateInvoice from '@/Components/Atoms/CreateInvoice'
 import InvoiceRow from '@/Components/Molecules/InvoiceRow'
 
 const propTypes = {
+  emptyAction: PropTypes.element.isRequired,
   invoices: PropTypes.array,
   customers: PropTypes.object,
   onRowClick: PropTypes.func
 }
 
-const InvoiceTable = ({ onRowClick, invoices = [], customers = {} }) => (
+const InvoiceTable = ({ emptyAction, onRowClick, invoices = [], customers = {} }) => (
   <article className='invoice-table__article'>
     <header className='invoice-table__header'>
       <div className='row'>
@@ -25,7 +25,7 @@ const InvoiceTable = ({ onRowClick, invoices = [], customers = {} }) => (
         ? invoices.map(invoice =>
           <InvoiceRow customer={customers[invoice.customer_id]} {...invoice} key={invoice.id} onClick={onRowClick} />
           )
-        : <div className='invoice-table__new'><p>There are no invoices</p><CreateInvoice /></div>
+        : <div className='invoice-table__new'><p>There are no invoices</p>{emptyAction}</div>
       }
     </div>
   </article>
