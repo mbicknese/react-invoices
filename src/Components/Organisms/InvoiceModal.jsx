@@ -10,7 +10,9 @@ const propTypes = {
   customers: PropTypes.object.isRequired,
   discount: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
-  customerId: PropTypes.number.isRequired
+  customerId: PropTypes.number.isRequired,
+  onSave: PropTypes.func,
+  id: PropTypes.number
 }
 
 class InvoiceModal extends Component {
@@ -22,6 +24,7 @@ class InvoiceModal extends Component {
     this.onProductRemove = this.onProductRemove.bind(this)
     this.onProductChange = this.onProductChange.bind(this)
     this.onQuantityChange = this.onQuantityChange.bind(this)
+    this.onSave = this.onSave.bind(this)
     this.onTotalChange = this.onTotalChange.bind(this)
     this.state = {
       total: 0,
@@ -75,11 +78,20 @@ class InvoiceModal extends Component {
     }})
   }
   onQuantityChange (event) {
-    const quantity = event.target.value
+    const quantity = parseInt(event.target.value)
     this.setState(prevState => ({ newProduct: {
       id: prevState.newProduct.id,
       quantity
     }}))
+  }
+  onSave () {
+    const { total, discount, customerId } = this.state
+    this.props.onSave({
+      total,
+      discount,
+      customer_id: customerId,
+      id: this.props.id
+    })
   }
   onTotalChange () {
     this.setState(({ discount, invoiceProducts }) => ({
@@ -89,7 +101,7 @@ class InvoiceModal extends Component {
 
   renderActions () {
     return [
-      <button className='btn btn-info' key='save'>Save invoice</button>,
+      <button className='btn btn-info' key='save' onClick={this.onSave}>Save invoice</button>,
       <button className='btn btn-danger' key='delete'>Delete invoice</button>
     ]
   }

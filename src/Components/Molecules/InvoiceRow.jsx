@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import Money from '@/Components/Atoms/Money'
 
 const propTypes = {
   id: PropTypes.number.isRequired,
@@ -27,7 +28,7 @@ class InvoiceRow extends Component {
           <div className='col-sm-4'>Invoice # {id}</div>
           <div className='col-sm-4'>{customer.name}</div>
           <div className='col-sm-2'>{discount}%</div>
-          <div className='col-sm-2 text-right'>${total}</div>
+          <div className='col-sm-2 text-right'><Money amount={total} /></div>
         </div>
       </div>
     )
