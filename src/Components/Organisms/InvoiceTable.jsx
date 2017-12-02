@@ -19,7 +19,7 @@ const InvoiceTable = ({ onRowClick, invoices = [], customers = {} }) => (
         <div className='col-sm-2 invoice-table__column-name text-right'>Total</div>
       </div>
     </header>
-    <div className={'invoice-table__body' + (invoices.length ? '' : ' invoices-table__body--empty')}>
+    <div className={'invoice-table__body' + (invoices.length ? '' : ' invoice-table__body--empty')}>
       {
         invoices.length
         ? invoices.map(invoice =>
