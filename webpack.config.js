@@ -14,6 +14,7 @@ const config = {
       },
       {
         test: /\.scss$/,
+        exclude: /node_modules/,
         use: ExtractTextPlugin.extract({use: [{
           loader: 'css-loader'
         }, {
@@ -47,6 +48,22 @@ const config = {
     historyApiFallback: true,
     hot: true
   }
+}
+
+if (process.env.NODE_ENV === 'production') {
+  config.devtool = 'cheap-module-source-map'
+  config.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
+    new webpack.optimize.AggressiveMergingPlugin({
+      minSizeReduce: 1,
+      moveToParents: true
+    })
+  )
+} else {
+  config.devtool = 'cheap-module-eval-source-map'
+  config.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
+  )
 }
 
 module.exports = config
